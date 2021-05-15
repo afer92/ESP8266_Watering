@@ -54,3 +54,5 @@ NodeMCU Lolin V3 Module ESP8266 ESP-12F
 ## Sensor
 [https://www.instructables.com/Waterproofing-a-Capacitance-Soil-Moisture-Sensor/](https://www.instructables.com/Waterproofing-a-Capacitance-Soil-Moisture-Sensor/)
 ![](https://github.com/afer92/ESP8266_Watering/blob/main/images/20210515_212744.jpg?raw=true)
+## Wiring
+![](https://github.com/afer92/ESP8266_Watering/blob/main/images/20210507_231513.jpg?raw=true)

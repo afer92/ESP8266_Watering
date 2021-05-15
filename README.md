@@ -46,7 +46,6 @@ http://sensorIp/log.html
 15:03:13 Set Pump Off
 15:03:13 Program stop
 15:03:13 Moisture : 5
-15:03:14 Program start : 303010
 ```
 ## Schema
 NodeMCU Lolin V3 Module ESP8266 ESP-12F

@@ -51,3 +51,6 @@ http://sensorIp/log.html
 ## Schema
 NodeMCU Lolin V3 Module ESP8266 ESP-12F
 ![](https://github.com/afer92/ESP8266_Watering/blob/main/images/20210428_PasseBas.jpg?raw=true)
+## Sensor
+[https://www.instructables.com/Waterproofing-a-Capacitance-Soil-Moisture-Sensor/](https://www.instructables.com/Waterproofing-a-Capacitance-Soil-Moisture-Sensor/)
+![](https://github.com/afer92/ESP8266_Watering/blob/main/images/20210515_212744.jpg?raw=true)

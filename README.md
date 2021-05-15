@@ -56,3 +56,4 @@ NodeMCU Lolin V3 Module ESP8266 ESP-12F
 ![](https://github.com/afer92/ESP8266_Watering/blob/main/images/20210515_212744.jpg?raw=true)
 ## Wiring
 ![](https://github.com/afer92/ESP8266_Watering/blob/main/images/20210507_231513.jpg?raw=true)
+![](https://github.com/afer92/ESP8266_Watering/blob/main/images/20210507_231604.jpg?raw=true)

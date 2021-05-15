@@ -12,6 +12,14 @@ http://sensorIp/
 ```
 {"minindex":418,"maxindex":700,"seuilindex":630,"sensorvalue":465,"moisture":83,"pumpon":0,"epoch": 2085999012,"sequence": 303010,"wateringsleep": 10,"pgmrunning": 0,"wateringsleeping": 1,"sequencepgm": 0,"wateringsleeppgm": 0,"pgmversion": "1.0.1","timedata": "12:10:12"}
 ```
+- minindex : sensor value at moisture 100%
+- maxindex : sensor value at moisture 0%
+- seuilindex : if sensor value < seuilindex, watering start
+- wateringsleep : watering pause (seconds)
+- sequence : 303010 - watering 10s, pause, watering 30s, pause watering 30s, end
+- moisture : moisture %
+- pumpon : 1 if pump on, else 0
+- epoch : data timestamp (epoch)
 ## Set parameter
 ```
 http://sensorIp/seuilindex=600

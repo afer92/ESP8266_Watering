@@ -1,3 +1,4 @@
+#include <TimeLib.h>
 #include "FS.h"
 
 /*********
@@ -32,6 +33,17 @@ boolean initLog() {
 
 boolean writeLogln(String text2w, NTPClient timeClient) {
   timeClient.forceUpdate();
+  unsigned long int t = timeClient.getEpochTime();
+  Serial.print(year(t));
+  if (month(t) < 10) {
+    Serial.print("0");
+  }
+  Serial.print(month(t));
+  if (day(t) < 10) {
+    Serial.print("0");
+  }
+  Serial.print(day(t));
+  Serial.print(" ");
   Serial.println(text2w);
   item2write = item2write + text2w;
   File f = SPIFFS.open(loghtml, "a+");
@@ -39,6 +51,16 @@ boolean writeLogln(String text2w, NTPClient timeClient) {
     Serial.println("file open failed");
     return false;
   }
+  f.print(year(t));
+  if (month(t) < 10) {
+    f.print("0");
+  }
+  f.print(month(t));
+  if (day(t) < 10) {
+    f.print("0");
+  }
+  f.print(day(t));
+  f.print("&nbsp;");
   f.print(timeClient.getFormattedTime());
   f.print("&nbsp;");
   f.print(item2write);

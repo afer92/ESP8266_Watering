@@ -50,7 +50,7 @@ unsigned long sequence = 10203L;
   Program parameters
 *********/
 
-const char* pgmVersion = "1.0.1";
+const char* pgmVersion = "1.0.2";
 boolean wateringSleeping = true;
 boolean pgmRunning = false;
 unsigned long next2doepoch = 0L;

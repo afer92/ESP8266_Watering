@@ -35,7 +35,7 @@ http://sensorIp/log.html
 
 ```
 15:01:01 ## Start of Program v: 1.0.1 ##
-15:01:01 Connecting to WirelessAF
+15:01:01 Connecting to MyWifi
 15:01:01 Program start : 303010
 15:01:02 Moisture : 5
 15:01:02 Set Pump On

@@ -21,8 +21,8 @@
 *********/
 
 // Replace with your network details
-const char* ssid = "xxxxxxxxxxxxxx";
-const char* password = "xxxxxxxxxxxxxxxxxxxxxxxx";
+const char* ssid = "xxxxxxxxxx";
+const char* password = "xxxxxxxxxxxxxxxxxxxxxxxxxx";
 String newHostname = "Arrosage";
 
 /*********
@@ -50,7 +50,7 @@ unsigned long sequence = 10203L;
   Program parameters
 *********/
 
-const char* pgmVersion = "1.0.2";
+const char* pgmVersion = "1.0.3";
 boolean wateringSleeping = true;
 boolean pgmRunning = false;
 unsigned long next2doepoch = 0L;
@@ -59,6 +59,7 @@ int task2doNum = 0;
 int wateringSleepPgm = 0;
 unsigned long sequencePgm = 0L;
 unsigned long int nowPgm = 0;
+String descr = "Description";
 
 
 /*********
@@ -200,7 +201,7 @@ void actionInit(unsigned long seq, int sleeptime, int todo) {
 
 void t2do(bool actionOn, void(*pf)(bool))
 {
-	pf(actionOn);
+  pf(actionOn);
 }
 
 void testCall() {
@@ -274,7 +275,7 @@ bool loadPersistent() {
         return false;
     }
     // Serial.print("loadPersistent : ");
-    String jsonStr = f.readStringUntil('}');
+    String jsonStr = f.readStringUntil('}') + "}";
     // Serial.println(jsonStr);
     minIndex = jsonExtract(jsonStr, "minindex").toInt();
     maxIndex = jsonExtract(jsonStr, "maxindex").toInt();
@@ -282,6 +283,7 @@ bool loadPersistent() {
     wateringSleep = jsonExtract(jsonStr, "wateringsleep").toInt();
     sequence = jsonExtract(jsonStr, "sequence").toInt();
     lastEvent = jsonExtract(jsonStr, "epoch").toInt();
+    descr = String(jsonExtract(jsonStr, "descr"));
     return true;
 }
 
@@ -421,6 +423,10 @@ void webServer() {
                         wateringSleep = getParam("wateringsleep").toInt();
                         data2save = true;
                     }
+                    if(header.indexOf("descr") >= 0) {
+                        descr = getParam("descr");
+                        data2save = true;
+                    }
                     if(header.indexOf("wateringpgm") >= 0) {
                         if (!pgmRunning){
                             unsigned long wPgm = getParam("wateringpgm").toInt();
@@ -546,50 +552,50 @@ void spiffsInfo() {
 }
 
 String params2json() {
-    String result = "{";
+    String result = "{\n";
     result = result + "\"minindex\":";
     result = result + minIndex;
-    result = result + ",\"maxindex\":";
+    result = result + ",\n\"maxindex\":";
     result = result + maxIndex;
-    result = result + ",\"seuilindex\":";
+    result = result + ",\n\"seuilindex\":";
     result = result + seuilIndex;
-    result = result + ",\"sensorvalue\":";
+    result = result + ",\n\"sensorvalue\":";
     result = result + sensorValue;
-    result = result + ",\"moisture\":";
+    result = result + ",\n\"moisture\":";
     result = result + moistureString;
-    result = result + ",\"pumpon\":";
+    result = result + ",\n\"pumpon\":";
     if (pumpOn) {
         result = result + "1";
     } else {
         result = result + "0";
     }
-    result = result + ",\"epoch\": ";
+    result = result + ",\n\"epoch\":";
     result = result + timeClient.getEpochTime();
-    result = result + ",\"sequence\": ";
+    result = result + ",\n\"sequence\":";
     result = result + sequence;
-    result = result + ",\"wateringsleep\": ";
+    result = result + ",\n\"wateringsleep\":";
     result = result + wateringSleep;
-    result = result + ",\"pgmrunning\": ";
+    result = result + ",\n\"pgmrunning\":";
     if (pgmRunning) {
         result = result + "1";
     } else {
         result = result + "0";
     }
-    result = result + ",\"wateringsleeping\": ";
+    result = result + ",\n\"wateringsleeping\":";
     if (wateringSleeping) {
         result = result + "1";
     } else {
         result = result + "0";
     }
-    result = result + ",\"sequencepgm\": ";
+    result = result + ",\n\"sequencepgm\":";
     result = result + sequencePgm;
-    result = result + ",\"wateringsleeppgm\": ";
-    result = result + wateringSleepPgm;
-    result = result + ",\"pgmversion\": \"";
-    result = result + pgmVersion;
-    result = result + "\",\"timedata\": \"";
+    result = result + ",\n\"wateringsleeppgm\":";
+    result = result + wateringSleepPgm + ",\n";
+    result = result + "\"pgmversion\":\"" + pgmVersion + "\",\n";
+    result = result + "\"descr\":\"" + descr + "\",\n";
+    result = result + "\"timedata\":\"";
     result = result + timeClient.getFormattedTime();
-    result = result + "\"}";
+    result = result + "\"\n}\n";
     return result;
 }    
   

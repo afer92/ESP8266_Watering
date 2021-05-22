@@ -3,7 +3,6 @@
   Complete project details at 
 *********/
 
-
 #include <ArduinoOTA.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
@@ -15,14 +14,13 @@
 
 #define RESET_INITIAL_NTPTIME false // Permet de réinitialisé le temps initial | Allows to reset initial NTP time
 
-
 /*********
   Network parameters
 *********/
 
 // Replace with your network details
-const char* ssid = "xxxxxxxxxx";
-const char* password = "xxxxxxxxxxxxxxxxxxxxxxxxxx";
+const char *ssid = "xxxxxxxxxx";
+const char *password = "xxxxxxxxxxxxxxxxxxxxxxxxxx";
 String newHostname = "Arrosage";
 
 /*********
@@ -32,7 +30,7 @@ String newHostname = "Arrosage";
 const int analogInPin = A0; // ESP8266 Analog Pin ADC0 = A0
 
 // PWM sur GPIO4 D2
-const int ledPin = 4;// PWM output pin
+const int ledPin = 4; // PWM output pin
 const byte OC1B_PIN = ledPin;
 
 /*********
@@ -45,12 +43,11 @@ int seuilIndex = 600;
 int wateringSleep = 5;
 unsigned long sequence = 10203L;
 
-
 /*********
   Program parameters
 *********/
 
-const char* pgmVersion = "1.0.3";
+const char *pgmVersion = "1.0.3";
 boolean wateringSleeping = true;
 boolean pgmRunning = false;
 unsigned long next2doepoch = 0L;
@@ -60,7 +57,6 @@ int wateringSleepPgm = 0;
 unsigned long sequencePgm = 0L;
 unsigned long int nowPgm = 0;
 String descr = "Description";
-
 
 /*********
   Program variables
@@ -89,33 +85,40 @@ WiFiServer server(80);
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 3600, 60000);
 
-
 /*********
   Sequence
 *********/
 
-void task2do(boolean actionOn) {
-    if (task2doNum == 1) {
+void task2do(boolean actionOn)
+{
+    if (task2doNum == 1)
+    {
         actionTest(actionOn);
         return;
     }
-    
-    if (task2doNum == 2) {
+
+    if (task2doNum == 2)
+    {
         setPump(actionOn);
         return;
     }
 }
 
 // compute epoch for next state
-int compNext() {
+int compNext()
+{
     unsigned long time2wait = sequencePgm % 100;
-    if (time2wait == 0) {
+    if (time2wait == 0)
+    {
         return time2wait;
     }
-    if (wateringSleeping) {
+    if (wateringSleeping)
+    {
         time2wait = wateringSleepPgm;
         next2doepoch = nowPgm + wateringSleepPgm;
-    } else {
+    }
+    else
+    {
         next2doepoch = nowPgm + time2wait;
         // prepare next watering
         sequencePgm = sequencePgm / 100;
@@ -123,25 +126,31 @@ int compNext() {
     return time2wait;
 }
 
-boolean sequencer() {
+boolean sequencer()
+{
     int time2wait = 0;
-    if (!pgmRunning and (sequencePgm == 0)){
+    if (!pgmRunning and (sequencePgm == 0))
+    {
         return false;
     }
 
     nowPgm = timeClient.getEpochTime();
-    if (!pgmRunning and (sequencePgm > 0)) {
+    if (!pgmRunning and (sequencePgm > 0))
+    {
         // program start
-        if (htmllog) {
-          writeLog("Program start : ");
-          // writeLogln(sequencePgm, timeClient);
-          writeLogln(String(sequencePgm), timeClient);
-          writeLog("Moisture : ");
-          writeLogln(moistureString, timeClient);
-        } else {
-          Serial.println("Program start");
-          Serial.print("sequencePgm: ");
-          Serial.println(sequencePgm);
+        if (htmllog)
+        {
+            writeLog("Program start : ");
+            // writeLogln(sequencePgm, timeClient);
+            writeLogln(String(sequencePgm), timeClient);
+            writeLog("Moisture : ");
+            writeLogln(moistureString, timeClient);
+        }
+        else
+        {
+            Serial.println("Program start");
+            Serial.print("sequencePgm: ");
+            Serial.println(sequencePgm);
         }
         task2do(true);
         wateringSleeping = false;
@@ -149,11 +158,15 @@ boolean sequencer() {
         pgmRunning = true;
         return true;
     }
-    if (nowPgm >= next2doepoch) {
-        if (wateringSleeping) {
+    if (nowPgm >= next2doepoch)
+    {
+        if (wateringSleeping)
+        {
             task2do(true);
             wateringSleeping = false;
-        } else {
+        }
+        else
+        {
             task2do(false);
             wateringSleeping = true;
         }
@@ -164,14 +177,18 @@ boolean sequencer() {
         Serial.print("sequencePgm: ");
         Serial.println(sequencePgm);
         */
-        if ((sequencePgm == 0) and (time2wait == 0)) {
+        if ((sequencePgm == 0) and (time2wait == 0))
+        {
             // program end
-            if (htmllog) {
-              writeLogln("Program stop", timeClient);
-              writeLog("Moisture : ");
-              writeLogln(moistureString, timeClient);
-            } else {
-              Serial.println("Program stop");
+            if (htmllog)
+            {
+                writeLogln("Program stop", timeClient);
+                writeLog("Moisture : ");
+                writeLogln(moistureString, timeClient);
+            }
+            else
+            {
+                Serial.println("Program stop");
             }
             pgmRunning = false;
             wateringSleeping = true;
@@ -182,15 +199,20 @@ boolean sequencer() {
     return true;
 }
 
-void actionTest(boolean actionOn) {
-    if (actionOn) {
+void actionTest(boolean actionOn)
+{
+    if (actionOn)
+    {
         Serial.println("Action On");
-    } else {
+    }
+    else
+    {
         Serial.println("Action Off");
     }
 }
 
-void actionInit(unsigned long seq, int sleeptime, int todo) {
+void actionInit(unsigned long seq, int sleeptime, int todo)
+{
     sequencePgm = seq;
     task2doNum = todo;
     wateringSleepPgm = sleeptime;
@@ -199,12 +221,13 @@ void actionInit(unsigned long seq, int sleeptime, int todo) {
     // Serial.println(sequencePgm);
 }
 
-void t2do(bool actionOn, void(*pf)(bool))
+void t2do(bool actionOn, void (*pf)(bool))
 {
-  pf(actionOn);
+    pf(actionOn);
 }
 
-void testCall() {
+void testCall()
+{
     t2do(true, actionTest);
     t2do(false, setPump);
 }
@@ -213,13 +236,15 @@ void testCall() {
   WiFi
 *********/
 
-void initWiFi() {
+void initWiFi()
+{
     // analogWrite(ledPin, 100);
     WiFi.mode(WIFI_STA);
     WiFi.hostname(newHostname.c_str());
     WiFi.begin(ssid, password);
     Serial.print("Connecting to WiFi ..");
-    while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED)
+    {
         Serial.print('.');
         delay(1000);
     }
@@ -240,37 +265,44 @@ long int _now = 0;
 int _hour;
 int _min;
 
-void resetInitialTime() {
+void resetInitialTime()
+{
     timeClient.forceUpdate();
     _now = timeClient.getEpochTime();
-    _hour = (_now  % 86400L) / 3600;
+    _hour = (_now % 86400L) / 3600;
     _min = (_now % 3600) / 60;
     Serial.print("The UTC time is ");
     Serial.print(_hour);
     Serial.print(':');
-    if (_min < 10) {
+    if (_min < 10)
+    {
         Serial.print('0');
     }
     Serial.println(_min);
     savePersistent();
 }
 
-bool persistentExist() {
+bool persistentExist()
+{
     File f = SPIFFS.open("/persistent.txt", "r");
-    if (!f) {
+    if (!f)
+    {
         return false;
     }
     return true;
 }
 
-bool loadPersistent() {
+bool loadPersistent()
+{
     File f = SPIFFS.open("/lastEvent.txt", "w");
-    if (f) {
+    if (f)
+    {
         SPIFFS.remove("/lastEvent.txt");
     }
     // Recharge le dernier horodatage depuis la zone SPIFFS | Reload last date/time from SPIFFS area
     f = SPIFFS.open("/persistent.txt", "r");
-    if (!f) {
+    if (!f)
+    {
         Serial.println("Failed to open file, force NTP");
         return false;
     }
@@ -287,9 +319,11 @@ bool loadPersistent() {
     return true;
 }
 
-bool savePersistent() {
+bool savePersistent()
+{
     File f = SPIFFS.open("/persistent.txt", "w");
-    if (!f) {
+    if (!f)
+    {
         Serial.println("file open failed");
         return false;
     }
@@ -299,54 +333,66 @@ bool savePersistent() {
     return true;
 }
 
-long int calculateTimeSpent() {
+long int calculateTimeSpent()
+{
     loadPersistent();
     // timeClient.forceUpdate();
     _now = timeClient.getEpochTime();
     int timeSpent = _now - lastEvent;
-    Serial.print("Time spent since last update (s): "); Serial.println(timeSpent);
+    Serial.print("Time spent since last update (s): ");
+    Serial.println(timeSpent);
     return timeSpent;
 }
-
 
 /*********
   App functions
 *********/
 
-String getMoisture() {
+String getMoisture()
+{
     int deltaIndex = 0L;
     int moisture = 0L;
     // read the analog in value
     sensorValue = analogRead(analogInPin);
-    if(sensorValue<minIndex){
+    if (sensorValue < minIndex)
+    {
         return "100";
     }
-    if(sensorValue>=maxIndex){
+    if (sensorValue >= maxIndex)
+    {
         return "0";
     }
     deltaIndex = maxIndex - sensorValue;
     moisture = (deltaIndex * 100) / (maxIndex - minIndex);
-    return (String(moisture)); 
+    return (String(moisture));
 }
 
 //equivalent of analogWrite on pin 10
-void setPump(boolean pump){
+void setPump(boolean pump)
+{
     Serial.print("Set Pump :  ");
-    if (pump) {
+    if (pump)
+    {
         Serial.println("On");
         digitalWrite(ledPin, HIGH);
         pumpOn = true;
-    } else {
+    }
+    else
+    {
         Serial.println("Off");
         digitalWrite(ledPin, LOW);
         pumpOn = false;
     }
-    if (htmllog) {
-      if (pump) {
-        writeLogln("Set Pump On", timeClient);
-      } else {
-        writeLogln("Set Pump Off", timeClient);
-      }
+    if (htmllog)
+    {
+        if (pump)
+        {
+            writeLogln("Set Pump On", timeClient);
+        }
+        else
+        {
+            writeLogln("Set Pump Off", timeClient);
+        }
     }
 }
 
@@ -354,7 +400,8 @@ void setPump(boolean pump){
   Web functions
 *********/
 
-String getParam(String name) {
+String getParam(String name)
+{
     String result;
     result = "";
     result = header.substring(header.indexOf(name));
@@ -362,89 +409,110 @@ String getParam(String name) {
     // Serial.println(result);
     result = result.substring(0, result.indexOf(' '));
     // Serial.println(result);
-    if(result.indexOf("&") >= 0) {
+    if (result.indexOf("&") >= 0)
+    {
         result = result.substring(0, result.indexOf('&'));
         // Serial.println(result);
     }
-    result = result.substring(result.indexOf('=')+1);
+    result = result.substring(result.indexOf('=') + 1);
     // Serial.println(result);
     return result;
 }
 
-void webHeader(WiFiClient client) {
+void webHeader(WiFiClient client)
+{
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: application/json;charset=UTF-8");
     client.println("Connection: close");
     client.println();
 }
 
-void webBody(WiFiClient client) {
+void webBody(WiFiClient client)
+{
     client.println(params2json());
 }
 
-void webOutput(WiFiClient client) {
+void webOutput(WiFiClient client)
+{
     webHeader(client);
     webBody(client);
 }
 
-void webServer() {
+void webServer()
+{
     WiFiClient client = server.available();
-    if (client) {
+    if (client)
+    {
         currentTime = millis();
         previousTime = currentTime;
         Serial.println("New client");
         // bolean to locate when the http request ends
         boolean blank_line = true;
-        while (client.connected() && currentTime - previousTime <= timeoutTime) {
+        while (client.connected() && currentTime - previousTime <= timeoutTime)
+        {
             currentTime = millis();
-            if (client.available()) {
+            if (client.available())
+            {
                 char c = client.read();
                 header += c;
 
-                if (c == '\n' && blank_line) {
+                if (c == '\n' && blank_line)
+                {
                     boolean data2save = false;
-                    if(header.indexOf("minindex") >= 0) {
+                    if (header.indexOf("minindex") >= 0)
+                    {
                         minIndex = getParam("minindex").toInt();
                         data2save = true;
                     }
-                    if(header.indexOf("maxindex") >= 0) {
+                    if (header.indexOf("maxindex") >= 0)
+                    {
                         maxIndex = getParam("maxindex").toInt();
                         data2save = true;
                     }
-                    if(header.indexOf("seuilindex") >= 0) {
+                    if (header.indexOf("seuilindex") >= 0)
+                    {
                         seuilIndex = getParam("seuilindex").toInt();
                         data2save = true;
                     }
-                    if(header.indexOf("sequence") >= 0) {
+                    if (header.indexOf("sequence") >= 0)
+                    {
                         sequence = getParam("sequence").toInt();
                         data2save = true;
                     }
-                    if(header.indexOf("wateringsleep") >= 0) {
+                    if (header.indexOf("wateringsleep") >= 0)
+                    {
                         wateringSleep = getParam("wateringsleep").toInt();
                         data2save = true;
                     }
-                    if(header.indexOf("descr") >= 0) {
+                    if (header.indexOf("descr") >= 0)
+                    {
                         descr = getParam("descr");
                         data2save = true;
                     }
-                    if(header.indexOf("wateringpgm") >= 0) {
-                        if (!pgmRunning){
+                    if (header.indexOf("wateringpgm") >= 0)
+                    {
+                        if (!pgmRunning)
+                        {
                             unsigned long wPgm = getParam("wateringpgm").toInt();
                             actionInit(wPgm, wateringSleep, 2);
                         }
                     }
-                    if(header.indexOf("pgmtest") >= 0) {
-                        if (!pgmRunning){
+                    if (header.indexOf("pgmtest") >= 0)
+                    {
+                        if (!pgmRunning)
+                        {
                             actionInit(30405L, 5, 2);
                         }
                     }
-                    if(header.indexOf("log.html") >= 0) {
+                    if (header.indexOf("log.html") >= 0)
+                    {
                         webOutputLog(client);
                         header = "";
                         break;
                     }
-                    
-                    if (data2save) {
+
+                    if (data2save)
+                    {
                         savePersistent();
                     }
 
@@ -452,11 +520,13 @@ void webServer() {
                     header = "";
                     break;
                 }
-                if (c == '\n') {
+                if (c == '\n')
+                {
                     // when starts reading a new line
                     blank_line = true;
                 }
-                else if (c != '\r') {
+                else if (c != '\r')
+                {
                     // when finds a character on the current line
                     blank_line = false;
                 }
@@ -469,13 +539,12 @@ void webServer() {
     }
 }
 
-
-
 /*********
   OTA
 *********/
 
-void setupOta() {
+void setupOta()
+{
     // Hostname defaults to esp8266-[ChipID]
     // ArduinoOTA.setHostname("Demo OTA ESP8266");
 
@@ -485,26 +554,31 @@ void setupOta() {
     ArduinoOTA.onStart([]() {
         Serial.println("Start");
     });
-    
+
     ArduinoOTA.onEnd([]() {
         Serial.println("\nEnd");
     });
-    
+
     ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
         Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
     });
-    
+
     ArduinoOTA.onError([](ota_error_t error) {
         Serial.printf("Error[%u]: ", error);
-        if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
-        else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
-        else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
-        else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-        else if (error == OTA_END_ERROR) Serial.println("End Failed");
+        if (error == OTA_AUTH_ERROR)
+            Serial.println("Auth Failed");
+        else if (error == OTA_BEGIN_ERROR)
+            Serial.println("Begin Failed");
+        else if (error == OTA_CONNECT_ERROR)
+            Serial.println("Connect Failed");
+        else if (error == OTA_RECEIVE_ERROR)
+            Serial.println("Receive Failed");
+        else if (error == OTA_END_ERROR)
+            Serial.println("End Failed");
     });
 
     Serial.println("## ArduinoOTA.begin ##");
-     
+
     ArduinoOTA.begin();
     Serial.println("## Ready");
     Serial.print("## IP address: ");
@@ -515,7 +589,8 @@ void setupOta() {
   Tools
 *********/
 
-void spiffsInfo() {
+void spiffsInfo()
+{
     // Get all information about SPIFFS
     FSInfo fsInfo;
     SPIFFS.info(fsInfo);
@@ -551,7 +626,8 @@ void spiffsInfo() {
     Serial.println();
 }
 
-String params2json() {
+String params2json()
+{
     String result = "{\n";
     result = result + "\"minindex\":";
     result = result + minIndex;
@@ -564,9 +640,12 @@ String params2json() {
     result = result + ",\n\"moisture\":";
     result = result + moistureString;
     result = result + ",\n\"pumpon\":";
-    if (pumpOn) {
+    if (pumpOn)
+    {
         result = result + "1";
-    } else {
+    }
+    else
+    {
         result = result + "0";
     }
     result = result + ",\n\"epoch\":";
@@ -576,15 +655,21 @@ String params2json() {
     result = result + ",\n\"wateringsleep\":";
     result = result + wateringSleep;
     result = result + ",\n\"pgmrunning\":";
-    if (pgmRunning) {
+    if (pgmRunning)
+    {
         result = result + "1";
-    } else {
+    }
+    else
+    {
         result = result + "0";
     }
     result = result + ",\n\"wateringsleeping\":";
-    if (wateringSleeping) {
+    if (wateringSleeping)
+    {
         result = result + "1";
-    } else {
+    }
+    else
+    {
         result = result + "0";
     }
     result = result + ",\n\"sequencepgm\":";
@@ -597,13 +682,14 @@ String params2json() {
     result = result + timeClient.getFormattedTime();
     result = result + "\"\n}\n";
     return result;
-}    
-  
+}
+
 /*********
   Setup
 *********/
 
-void setup() {
+void setup()
+{
     // initialize serial communication at 115200
     pinMode(ledPin, OUTPUT);
     Serial.begin(115200);
@@ -615,20 +701,23 @@ void setup() {
     initWiFi();
     delay(5000);
     timeClient.begin();
-    
-    if (htmllog) {
-      writeLog("## Start of Program v: ");
-      writeLog(pgmVersion);
-      writeLogln(" ##", timeClient);
-      writeLog("Connecting to ");
-      writeLogln(ssid, timeClient);
-    } else {
-      Serial.println("## Start of Program ##");
-      Serial.println();
-      Serial.print("Connecting to ");
-      Serial.println(ssid);
+
+    if (htmllog)
+    {
+        writeLog("## Start of Program v: ");
+        writeLog(pgmVersion);
+        writeLogln(" ##", timeClient);
+        writeLog("Connecting to ");
+        writeLogln(ssid, timeClient);
     }
-    
+    else
+    {
+        Serial.println("## Start of Program ##");
+        Serial.println();
+        Serial.print("Connecting to ");
+        Serial.println(ssid);
+    }
+
     setupOta();
 
     // Starting the web server
@@ -639,15 +728,19 @@ void setup() {
     Serial.println(WiFi.localIP());
 
     timeClient.forceUpdate();
-    if ( RESET_INITIAL_NTPTIME ) {
+    if (RESET_INITIAL_NTPTIME)
+    {
         resetInitialTime();
     }
-    if ( !persistentExist() ) {
-         Serial.println("First Boot, store NTP time on SPIFFS area");
-         savePersistent();
-    } else {
+    if (!persistentExist())
+    {
+        Serial.println("First Boot, store NTP time on SPIFFS area");
+        savePersistent();
+    }
+    else
+    {
         Serial.println("NTP time already stored on SPIFFS area");
-        calculateTimeSpent(); 
+        calculateTimeSpent();
     }
     timeClient.update();
     Serial.println(timeClient.getFormattedTime());
@@ -655,12 +748,12 @@ void setup() {
     // actionInit(sequence, wateringSleep, 2);
 }
 
-
 /*********
   Loop
 *********/
 
-void loop() {
+void loop()
+{
     ArduinoOTA.handle();
     Serial.println(timeClient.getFormattedTime());
     calculateTimeSpent();
@@ -670,7 +763,8 @@ void loop() {
     // print the readings in the Serial Monitor
     Serial.print("sensor = ");
     Serial.println(sensorValue);
-    if((sensorValue>seuilIndex) and (!pgmRunning)) {
+    if ((sensorValue > seuilIndex) and (!pgmRunning))
+    {
         actionInit(sequence, wateringSleep, 2);
     }
 

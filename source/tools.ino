@@ -1,6 +1,8 @@
 #include <TimeLib.h>
 #include "FS.h"
 
+// Version : 1.0.0
+
 /*********
   File parameters
 *********/
@@ -28,21 +30,32 @@ boolean initLog() {
 }
 
 /*********
+  Tools
+*********/
+
+String getStringDate(NTPClient timeClient) {
+    String result = "";
+    timeClient.forceUpdate();
+    unsigned long int t = timeClient.getEpochTime();
+    result = result + String(year(t));
+    if (month(t) < 10) {
+        result = result + "0";
+    }
+    result = result + String(month(t));
+    if (day(t) < 10) {
+        result = result + "0";
+    }
+    result = result + String(day(t));
+    return result;
+}
+
+/*********
   Write log
 *********/
 
 boolean writeLogln(String text2w, NTPClient timeClient) {
-  timeClient.forceUpdate();
-  unsigned long int t = timeClient.getEpochTime();
-  Serial.print(year(t));
-  if (month(t) < 10) {
-    Serial.print("0");
-  }
-  Serial.print(month(t));
-  if (day(t) < 10) {
-    Serial.print("0");
-  }
-  Serial.print(day(t));
+  String dateStr = getStringDate(timeClient);
+  Serial.print(dateStr);
   Serial.print(" ");
   Serial.println(text2w);
   item2write = item2write + text2w;
@@ -51,15 +64,7 @@ boolean writeLogln(String text2w, NTPClient timeClient) {
     Serial.println("file open failed");
     return false;
   }
-  f.print(year(t));
-  if (month(t) < 10) {
-    f.print("0");
-  }
-  f.print(month(t));
-  if (day(t) < 10) {
-    f.print("0");
-  }
-  f.print(day(t));
+  f.print(dateStr);;
   f.print("&nbsp;");
   f.print(timeClient.getFormattedTime());
   f.print("&nbsp;");

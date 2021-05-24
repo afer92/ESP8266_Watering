@@ -19,8 +19,8 @@
 *********/
 
 // Replace with your network details
-const char *ssid = "xxxxxxxxxx";
-const char *password = "xxxxxxxxxxxxxxxxxxxxxxxxxx";
+const char* ssid = "xxxxxxxxxx";
+const char* password = "xxxxxxxxxxxxxxxxxxxxxxxxxx";
 String newHostname = "Arrosage";
 
 /*********
@@ -47,7 +47,7 @@ unsigned long sequence = 10203L;
   Program parameters
 *********/
 
-const char *pgmVersion = "1.0.3";
+const char *pgmVersion = "1.0.5";
 boolean wateringSleeping = true;
 boolean pgmRunning = false;
 unsigned long next2doepoch = 0L;
@@ -462,31 +462,37 @@ void webServer()
                     if (header.indexOf("minindex") >= 0)
                     {
                         minIndex = getParam("minindex").toInt();
+                        writeLogln("Set minIndex to " + getParam("minindex"), timeClient);
                         data2save = true;
                     }
                     if (header.indexOf("maxindex") >= 0)
                     {
                         maxIndex = getParam("maxindex").toInt();
+                        writeLogln("Set maxIndex to " + getParam("maxindex"), timeClient);
                         data2save = true;
                     }
                     if (header.indexOf("seuilindex") >= 0)
                     {
                         seuilIndex = getParam("seuilindex").toInt();
+                        writeLogln("Set seuilIndex to " + getParam("seuilindex"), timeClient);
                         data2save = true;
                     }
                     if (header.indexOf("sequence") >= 0)
                     {
                         sequence = getParam("sequence").toInt();
+                        writeLogln("Set sequence to " + getParam("sequence"), timeClient);
                         data2save = true;
                     }
                     if (header.indexOf("wateringsleep") >= 0)
                     {
                         wateringSleep = getParam("wateringsleep").toInt();
+                        writeLogln("Set wateringSleep to " + getParam("wateringsleep"), timeClient);
                         data2save = true;
                     }
                     if (header.indexOf("descr") >= 0)
                     {
                         descr = getParam("descr");
+                        writeLogln("Set descr to " + getParam("descr"), timeClient);
                         data2save = true;
                     }
                     if (header.indexOf("wateringpgm") >= 0)
@@ -679,6 +685,7 @@ String params2json()
     result = result + "\"pgmversion\":\"" + pgmVersion + "\",\n";
     result = result + "\"descr\":\"" + descr + "\",\n";
     result = result + "\"timedata\":\"";
+    result = result + getStringDate(timeClient) + " ";
     result = result + timeClient.getFormattedTime();
     result = result + "\"\n}\n";
     return result;

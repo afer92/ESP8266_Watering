@@ -7,9 +7,9 @@
   File parameters
 *********/
 
-const char* loghtml = "/log.html";
-const char* lresponse = "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\nConnection: close\n\n";
-const char* lheader = "<!doctype html><html><head><title>Arrosage</title><meta http-equiv=\"refresh\" content=\"5\"></head>\n\n";
+const char *loghtml = "/log.html";
+const char *lresponse = "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\nConnection: close\n\n";
+const char *lheader = "<!doctype html><html><head><title>Arrosage</title><meta http-equiv=\"refresh\" content=\"5\"></head>\n\n";
 
 String item2write = "";
 
@@ -17,9 +17,11 @@ String item2write = "";
   File init
 *********/
 
-boolean initLog() {
+boolean initLog()
+{
   File f = SPIFFS.open(loghtml, "w");
-  if (!f) {
+  if (!f)
+  {
     Serial.println("file open failed");
     return false;
   }
@@ -33,38 +35,44 @@ boolean initLog() {
   Tools
 *********/
 
-String getStringDate(NTPClient timeClient) {
-    String result = "";
-    timeClient.forceUpdate();
-    unsigned long int t = timeClient.getEpochTime();
-    result = result + String(year(t));
-    if (month(t) < 10) {
-        result = result + "0";
-    }
-    result = result + String(month(t));
-    if (day(t) < 10) {
-        result = result + "0";
-    }
-    result = result + String(day(t));
-    return result;
+String getStringDate(NTPClient timeClient)
+{
+  String result = "";
+  timeClient.forceUpdate();
+  unsigned long int t = timeClient.getEpochTime();
+  result = result + String(year(t));
+  if (month(t) < 10)
+  {
+    result = result + "0";
+  }
+  result = result + String(month(t));
+  if (day(t) < 10)
+  {
+    result = result + "0";
+  }
+  result = result + String(day(t));
+  return result;
 }
 
 /*********
   Write log
 *********/
 
-boolean writeLogln(String text2w, NTPClient timeClient) {
+boolean writeLogln(String text2w, NTPClient timeClient)
+{
   String dateStr = getStringDate(timeClient);
   Serial.print(dateStr);
   Serial.print(" ");
   Serial.println(text2w);
   item2write = item2write + text2w;
   File f = SPIFFS.open(loghtml, "a+");
-  if (!f) {
+  if (!f)
+  {
     Serial.println("file open failed");
     return false;
   }
-  f.print(dateStr);;
+  f.print(dateStr);
+  ;
   f.print("&nbsp;");
   f.print(timeClient.getFormattedTime());
   f.print("&nbsp;");
@@ -73,19 +81,23 @@ boolean writeLogln(String text2w, NTPClient timeClient) {
   f.close();
   item2write = "";
 }
-boolean writeLog(String text2w) {
-  Serial.print(text2w);  
+boolean writeLog(String text2w)
+{
+  Serial.print(text2w);
   item2write = item2write + text2w;
 }
 
-void webOutputLog(WiFiClient client) {
+void webOutputLog(WiFiClient client)
+{
   File f = SPIFFS.open(loghtml, "r");
-  if (!f) {
+  if (!f)
+  {
     Serial.println("file open failed");
     // return false;
   }
-  while (f.available()) {
-     client.write(f.read());
+  while (f.available())
+  {
+    client.write(f.read());
   }
   f.close();
   client.write("</body></html>");
